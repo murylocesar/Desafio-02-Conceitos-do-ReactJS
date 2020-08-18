@@ -28,8 +28,6 @@ function App() {
       repositories.splice(repositoryIndex, 1);
 
     });
-
-
   }
   useEffect(() => {
     api.get('/repositories').then(response => {
@@ -44,7 +42,7 @@ function App() {
         {
           repositories.map(repository =>
 
-            <li id={repository.id}> {repository.title}
+            <li key={repository.id}> {repository.title}
               <button onClick={() => handleRemoveRepository(repository.id)}>Remover</button>
             </li>
           )
