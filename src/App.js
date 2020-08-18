@@ -7,43 +7,51 @@ import api from './services/api.js';
 function App() {
 
   const [repositories, setRepositories] = useState([]);
+  useEffect(() => {
+    api.get("/repositories").then(({ data }) => {
+      setRepositories(data);
+    });
+  },[]);
 
   async function handleAddRepository() {
-    const response = await api.post('/repositories', {
-      title: 'Desafio',
-      url: 'https://github.com/murylocesar/Desafio-02--Conceitos-do-Node.js',
-      techs: ['Node.js',
-        'SQL'],
-      likes: 0
-    });
-    const repository = response.data;
+    try {
+      const response = await api.post("/repositories", {
+        title: `Desafio ${Date.now()}`,
+        url: "https://github.com/murylocesar/",
+        techs: ["Node.js","SQL"]
+      });
+      const repository = response.data;
 
-    setRepositories([...repositories, repository]);
+      setRepositories([...repositories, repository]);
+    } catch (err) {
+      console.error(err.message);
+    }
   }
 
   async function handleRemoveRepository(id) {
-    api.delete(`/repositories/${id}`).then(() => {
-
-      const repositoryIndex = repositories.findIndex(repository => repository.id === id);
-      repositories.splice(repositoryIndex, 1);
-
-    });
+    try {
+      await api.delete(`/repositories/${id}`);
+      setRepositories(
+        repositories.filter((repository) => repository.id !== id)
+      );
+    } catch (err) {
+      console.error(err.message);
+    }
   }
-  useEffect(() => {
-    api.get('/repositories').then(response => {
-      setRepositories(response.data);
-    });
-  }, [repositories]);
+
+
 
   return (
     <div>
       <ul data-testid="repository-list">
 
         {
-          repositories.map(repository =>
+          repositories.map((repository) =>
 
             <li key={repository.id}> {repository.title}
-              <button onClick={() => handleRemoveRepository(repository.id)}>Remover</button>
+              <button onClick={() => handleRemoveRepository(repository.id)}>
+                Remover
+              </button>
             </li>
           )
         }
